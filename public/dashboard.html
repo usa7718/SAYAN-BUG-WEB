@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYAN BUG // SECURE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #010103;
+            --card-bg: rgba(15, 15, 25, 0.7);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text: #ffffff;
+            --primary: #bd00ff;
+            --accent: #00e5ff;
+            --danger: #ff2a2a;
+            --glass-blur: blur(25px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            background: 
+                radial-gradient(circle at 0% 0%, rgba(189, 0, 255, 0.15) 0%, transparent 40%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 20px;
+        }
+
+        .top-bar {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(189, 0, 255, 0.2);
+        }
+        .top-bar h2 { font-family: 'Orbitron'; font-size: 18px; letter-spacing: 2px; }
+        .top-bar span { color: var(--primary); }
+
+        .main-content { padding: 10px 20px; max-width: 800px; margin: 0 auto; }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(189, 0, 255, 0.3);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 10px 0 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .avatar {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            overflow: hidden;
+        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info h3 { font-family: 'Rajdhani'; font-size: 20px; text-transform: uppercase; }
+        .user-info p { font-size: 11px; font-family: 'Share Tech Mono'; color: #aaa; }
+
+        .server-banner {
+            border-radius: 24px;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--card-border);
+        }
+        .banner-img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; filter: brightness(0.7);
+        }
+        .status-indicator {
+            position: absolute; top: 15px; right: 15px; z-index: 2;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 12px; border-radius: 20px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #32d74b; font-size: 11px; font-weight: 600;
+            transition: all 0.3s;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #32d74b; box-shadow: 0 0 10px #32d74b;
+            animation: pulse 1.5s infinite;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .tab-box {
+            flex: 1;
+            padding: 15px;
+            background: rgba(30, 30, 45, 0.85);
+            border: 1px solid rgba(189, 0, 255, 0.15);
+            border-radius: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .tab-box i {
+            font-size: 24px;
+            color: #888;
+            margin-bottom: 8px;
+            display: block;
+            transition: 0.3s;
+        }
+        .tab-box span {
+            font-family: 'Orbitron';
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .tab-box.active {
+            border-color: var(--primary);
+            background: rgba(189, 0, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(189, 0, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        .tab-box.active i {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+        .tab-box.active span {
+            color: #fff;
+        }
+
+        .tab-content {
+            display: none;
+            animation: slideUpFade 0.5s ease forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-section { margin-bottom: 20px; }
+        .input-label { font-size: 11px; color: #888; margin-bottom: 8px; display: block; letter-spacing: 1px; font-weight: 600; }
+        .target-input-wrapper {
+            position: relative;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .target-input-wrapper input {
+            background: transparent; border: none; color: #fff; width: 100%;
+            padding-left: 10px; font-size: 16px; font-family: 'Share Tech Mono'; outline: none;
+        }
+        .target-input-wrapper i { color: var(--primary); }
+
+        .method-trigger-btn {
+            display: block;
+            margin: 0 auto 15px;
+            padding: 10px 20px;
+            background: rgba(189, 0, 255, 0.1);
+            border: 1px dashed var(--primary);
+            color: var(--accent);
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .method-trigger-btn:hover { background: rgba(189, 0, 255, 0.2); box-shadow: 0 0 10px var(--primary); }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s;
+            opacity: 0;
+            margin-bottom: 20px;
+        }
+        .grid-container.active {
+            max-height: 300px;
+            opacity: 1;
+            margin-bottom: 20px;
+        }
+
+        .grid-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .grid-item.selected {
+            border-color: var(--primary);
+            background: rgba(189, 0, 255, 0.15);
+            box-shadow: 0 0 15px rgba(189, 0, 255, 0.2);
+        }
+        .grid-item i { font-size: 22px; margin-bottom: 8px; display: block; color: var(--accent); }
+        .grid-item span { font-family: 'Rajdhani'; font-size: 13px; font-weight: bold; text-transform: uppercase; display: block; }
+        
+        .launch-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 40px;
+    border: 2px solid #00f7ff;
+    background: transparent;
+    color: #00f7ff;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.launch-btn:hover{
+    background: #00f7ff;
+    color: #000;
+    box-shadow: 0 0 15px #00f7ff, 0 0 40px #00f7ff;
+}
+
+.launch-btn:active{
+    filter: brightness(70%);
+    transform: scale(0.97);
+    box-shadow: 0 0 5px #00f7ff;
+}
+
+        .group-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .loading-text {
+            text-align: center;
+            font-family: 'Orbitron';
+            color: var(--accent);
+            font-size: 14px;
+            margin: 30px 0;
+            letter-spacing: 2px;
+            animation: pulseText 1.5s infinite;
+        }
+
+        @keyframes pulseText {
+            0% { opacity: 0.5; text-shadow: none; }
+            50% { opacity: 1; text-shadow: 0 0 10px var(--accent); }
+            100% { opacity: 0.5; text-shadow: none; }
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(189, 0, 255, 0.1);
+            border-radius: 16px;
+            padding: 12px;
+            transition: 0.3s;
+        }
+
+        .group-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(189, 0, 255, 0.1);
+        }
+
+        .group-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .group-dp {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .group-name {
+            font-family: 'Rajdhani';
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .group-attack-btn {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: 'Share Tech Mono';
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .group-attack-btn:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px; 
+            left: 50%;
+            transform: translate(-50%, 40px);
+            opacity: 0;
+            visibility: hidden;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 11px; 
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: rgba(1, 1, 3, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            transition: transform 0.6s ease, opacity 0.5s ease, visibility 0.5s;
+            z-index: 100000;
+        }
+
+        .toast.active {
+            transform: translate(-50%, 0);
+            opacity: 1;
+            visibility: visible;
+        }
+        .disconnect-modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.4s;
+}
+
+.disconnect-modal.active{
+    opacity: 1;
+    visibility: visible;
+}
+
+.disconnect-box{
+    background: rgba(15,15,25,0.9);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 35px;
+    text-align: center;
+    max-width: 320px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+
+.disconnect-box i{
+    font-size: 40px;
+    color: #25D366;
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px #25D366;
+}
+
+.disconnect-box h3{
+    font-family: 'Orbitron';
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.disconnect-box p{
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.reconnect-btn{
+    padding: 12px 25px;
+    border-radius: 40px;
+    border: 2px solid #25D366;
+    background: transparent;
+    color: #25D366;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.reconnect-btn:hover{
+    background:#25D366;
+    color:#000;
+    box-shadow:0 0 15px #25D366;
+}
+    </style>
+</head>
+<body>
+    <div id="disconnectModal" class="disconnect-modal">
+    <div class="disconnect-box">
+        <i class="fab fa-whatsapp"></i>
+        <h3>WHATSAPP DISCONNECTED</h3>
+        <p>Your session was closed.<br>Please reconnect your WhatsApp.</p>
+
+        <button onclick="logout()" class="reconnect-btn">
+            RECONNECT
+        </button>
+    </div>
+</div>
+    <div class="top-bar">
+        <h2>SAYAN // <span>BUG WEB</span></h2>
+        <div style="display: flex; gap: 15px;">
+            <i class="fas fa-headset" id="musicToggle" style="color: var(--accent); cursor:pointer;"></i>
+            <i class="fas fa-sign-out-alt" style="color: var(--primary);" onclick="logout()"></i>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="profile-card">
+            <div class="avatar">
+                <img id="profile-img" src="https://sabir7718.is-a.dev/photos/sayan.jpg" alt="Admin">
+            </div>
+            <div class="user-info">
+                <h3 id="display-name">SAYAN -X BUG</h3>
+                <p>ROLE: <span style="color:var(--primary)">ADMIN</span> • <span id="display-expiry">SAYAN</span></p>
+                <span id="owner-tag" style="color: #00ff88; font-size: 10px; margin-top: 4px; display: block;">● SECURE INTERFACE</span>
+            </div>
+        </div>
+
+        <div class="server-banner">
+            <img src="sayan.jpg" class="banner-img" alt="SAYAN BANNER">
+            <div class="status-indicator" id="statusBox">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">CONNECTING...</span>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-box active" onclick="switchTab('tab-whatsapp', this)">
+                <i class="fab fa-whatsapp"></i>
+                <span>WHATSAPP</span>
+            </div>
+            <div class="tab-box" onclick="switchTab('tab-groups', this)">
+                <i class="fas fa-users"></i>
+                <span>GROUPS</span>
+            </div>
+        </div>
+
+        <div id="tab-whatsapp" class="tab-content active">
+            <div class="input-section">
+                <span class="input-label">TARGET WHATSAPP NUMBER</span>
+                <div class="target-input-wrapper">
+                    <i class="fas fa-phone-alt"></i>
+                    <input type="number" id="targetNum" placeholder="Ex: 91XXXXXXXXXX">
+                </div>
+            </div>
+
+            <button class="method-trigger-btn" onclick="toggleAttackMethods()">
+                <i class="fas fa-skull-crossbones"></i>  Choose Attack  <i class="fas fa-chevron-down"></i>
+            </button>
+
+            <div class="grid-container" id="gridMenu">
+                <div class="grid-item selected" onclick="selectBug(this, 'crash_android')">
+                    <i class="fab fa-android"></i>
+                    <span>KILL ANDROID</span>
+                </div>
+                <div class="grid-item" onclick="selectBug(this, 'iphone_hard')">
+                    <i class="fab fa-apple"></i>
+                    <span>IPHONE HARD</span>
+                </div>
+                <div class="grid-item" onclick="selectBug(this, 'delay_100')">
+                    <i class="fas fa-hourglass-end"></i>
+                    <span>100% DELAY</span>
+                </div>
+                <div class="grid-item" onclick="selectBug(this, 'force_close')">
+                    <i class="fas fa-ban"></i>
+                    <span>FORCE CLOSE</span>
+                </div>
+            </div>
+
+            <button class="launch-btn" onclick="initiateAttack()">☢ ATTACK</button>
+        </div>
+
+        <div id="tab-groups" class="tab-content">
+            <div class="group-list-container" id="groupListContainer">
+            </div>
+        </div>
+
+    </div>
+    <audio id="bgMusic" autoplay loop>
+    <source src="sayan.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const SERVER_URL = "";
+        let selectedMethod = "crash_android";
+        let deviceCode;
+
+        function getCookie(name) {
+            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            if (match) return match[2];
+            return null;
+        }
+
+        const isUserLoggedIn = getCookie("loggedIn");
+        if (isUserLoggedIn !== "true") {
+            window.location.href = "login";
+        }
+
+        const cookieName = getCookie("userName");
+        const cookiePic = getCookie("profilePic");
+        
+        if (cookieName) {
+            document.getElementById("display-name").innerText = decodeURIComponent(cookieName);
+        }
+        if (cookiePic) {
+            document.getElementById("profile-img").src = decodeURIComponent(cookiePic);
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-box').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            if (tabId === 'tab-groups') {
+                fetchGroups();
+            }
+        }
+
+        async function fetchGroups() {
+            const container = document.getElementById('groupListContainer');
+            container.innerHTML = '<div class="loading-text">LISTING ALL GROUPS...</div>';
+
+            try {
+                const res = await fetch(SERVER_URL + '/listgc', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceCode: deviceCode })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success && data.groups) {
+                    container.innerHTML = '';
+                    if (data.groups.length === 0) {
+                        container.innerHTML = '<div class="loading-text" style="color: #888;">NO GROUPS FOUND</div>';
+                        return;
+                    }
+
+                    data.groups.forEach(group => {
+                        const dp = group.profilePicture ? group.profilePicture : 'https://sabir7718.is-a.dev/photos/sayan.jpg';
+                        const itemHtml = `
+<div class="group-item">
+    <div class="group-info">
+        <img src="${dp}" class="group-dp" onerror="this.src='https://sabir7718.is-a.dev/photos/sayan.jpg'">
+        <span class="group-name">${group.name}</span>
+    </div>
+    <button class="group-attack-btn" onclick="attackGC('${group.jid}')">ATTACK</button>
+</div>
+`;
+                        container.innerHTML += itemHtml;
+                    });
+                } else {
+                    container.innerHTML = '<div class="loading-text" style="color: #ff2a2a;">FAILED TO LOAD GROUPS</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="loading-text" style="color: #ff2a2a;">SERVER UNREACHABLE</div>';
+            }
+        }
+
+        function toggleAttackMethods() {
+            const grid = document.getElementById('gridMenu');
+            grid.classList.toggle('active');
+            const btn = document.querySelector('.method-trigger-btn i.fa-chevron-down');
+            btn.style.transform = grid.classList.contains('active') ? "rotate(180deg)" : "rotate(0deg)";
+        }
+        
+        async function checkSessionStatus() {
+    try {
+
+        const res = await fetch(SERVER_URL + "/session-status", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                deviceCode: deviceCode
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.status === "disconnected"){
+
+            document
+            .getElementById("disconnectModal")
+            .classList
+            .add("active");
+
+        }
+
+    } catch(err){
+        console.log("Session check failed");
+    }
+}
+
+        function selectBug(el, method) {
+            document.querySelectorAll('.grid-item').forEach(item => item.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedMethod = method;
+            showToast(method.replace('_', ' ').toUpperCase() + " SELECTED", "success");
+        }
+
+        function showToast(msg, type = "success") {
+            const existing = document.querySelector('.toast');
+            if(existing) existing.remove();
+
+            const t = document.createElement("div");
+            t.className = "toast";
+            
+            if(type === 'success' || type === true) {
+                t.style.color = '#00ff88';
+                t.style.borderColor = '#00ff88';
+            } else {
+                t.style.color = '#ff3333';
+                t.style.borderColor = '#ff3333';
+            }
+            
+            t.innerText = msg;
+            document.body.appendChild(t);
+            
+            setTimeout(() => t.classList.add("active"), 10);
+            setTimeout(() => { 
+                t.classList.remove("active"); 
+                setTimeout(() => t.remove(), 500); 
+            }, 3000);
+        }
+
+        const expiryDate = getCookie("expiry") || localStorage.getItem("expiry");
+        if (expiryDate) {
+            document.getElementById("display-expiry").innerText = "EXP: " + new Date(expiryDate).toLocaleDateString();
+        }
+        
+        const music = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicToggle");
+
+musicBtn.addEventListener("click", () => {
+    if (music.paused) {
+        music.play();
+        showToast("MUSIC PLAYING", "success");
+    } else {
+        music.pause();
+        showToast("MUSIC STOPPED", "error");
+    }
+});
+
+        async function getDeviceCodeUnified() {
+            const saved = localStorage.getItem("deviceCode");
+            if (saved && saved.includes("|")) return saved;
+
+            const safe = v => (v !== undefined && v !== null && v !== "" ? v : "UNKNOWN");
+            let model = "WEB", device = "WEB", brand = "WEB";
+
+            try {
+                if (typeof Native !== "undefined" && Native.getDeviceInfo) {
+                    const info = Native.getDeviceInfo().split("|");
+                    model = safe(info[0]); device = safe(info[1]); brand = safe(info[2]);
+                }
+            } catch (e) {}
+
+            const hashSource = [
+                navigator.userAgent, navigator.language, screen.width, screen.height,
+                navigator.hardwareConcurrency, new Date().getTimezoneOffset()
+            ].join("|");
+
+            const encoded = new TextEncoder().encode(hashSource);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+            const hash = [...new Uint8Array(hashBuffer)].map(b => b.toString(16).padStart(2, "0")).join("");
+
+            const finalCode = `${model}|${device}|${brand}|${hash}`;
+            localStorage.setItem("deviceCode", finalCode);
+            return finalCode;
+        }
+
+        async function checkSystemHealth() {
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
+            const statusBox = document.getElementById('statusBox');
+
+            try {
+                const res = await fetch(`${SERVER_URL}/bug/send`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        username: getCookie("userName") || localStorage.getItem("username") || "test",
+                        accessKey: getCookie("accessKey") || localStorage.getItem("accessKey") || "test",
+                        deviceCode: deviceCode,
+                        number: "910000000000" 
+                    })
+                });
+
+                const data = await res.json();
+                if (data.message) {
+                    statusText.innerText = "SYSTEM ONLINE";
+                    statusText.style.color = "#32d74b";
+                    statusDot.style.background = "#32d74b";
+                    statusBox.style.borderColor = "rgba(0, 255, 0, 0.3)";
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                statusText.innerText = "SYSTEM ONLINE";
+                    statusText.style.color = "#32d74b";
+                    statusDot.style.background = "#32d74b";
+                    statusBox.style.borderColor = "rgba(0, 255, 0, 0.3)";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            deviceCode = await getDeviceCodeUnified();
+            checkSystemHealth();
+            setInterval(checkSessionStatus, 10000);
+        });
+
+        async function initiateAttack() {
+            let num = document.getElementById("targetNum").value.trim();
+            
+            if(!num) return showToast("ENTER TARGET NUMBER", "error");
+            
+            num = num.replace(/[\s+]/g, "");
+            if (!/^\d+$/.test(num)) return showToast("INVALID DIGITS", "error");
+
+            showToast("INITIALIZING PAYLOAD", "success");
+
+            let endpoint = "/sy3"; 
+
+            if (selectedMethod === 'iphone_hard') {
+                endpoint = "/sy"; 
+            } else if (selectedMethod === 'delay_100') {
+                endpoint = "/sy3"; 
+            } else if (selectedMethod === 'force_close') {
+                endpoint = "/sy2"; 
+            } else {
+                endpoint = "/sy2"; 
+            }
+
+            try {
+                const res = await fetch(SERVER_URL + endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        deviceCode: deviceCode,
+                        targetNumber: num 
+                    })
+                });
+                const data = await res.json();
+                
+                if(data.success || (data.message && !data.message.includes("fail"))) {
+                     showToast(data.message, "success");
+                } else {
+                     showToast("FAILED " + (data.message || "ERROR"), "error");
+                }
+                
+            } catch (err) {
+                showToast("SERVER UNREACHABLE", "error");
+            }
+        }
+        
+        async function attackGC(jid) {
+
+    if(!jid) {
+        showToast("INVALID GROUP", "error");
+        return;
+    }
+
+    showToast("INITIALIZING GC ACTION", "success");
+
+    try {
+
+        const res = await fetch(SERVER_URL + "/sygc", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                deviceCode: deviceCode,
+                targetGC: jid
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.success){
+            showToast("GC ACTION SENT", "success");
+        }else{
+            showToast(data.error || "FAILED", "error");
+        }
+
+    } catch(err){
+        showToast("SERVER ERROR", "error");
+    }
+}
+
+        function logout() {
+            document.cookie = "loggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "userName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "profilePic=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            localStorage.clear();
+            window.location.href = "login";
+        }
+    </script>
+</body>
+</html>

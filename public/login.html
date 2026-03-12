@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SAYAN Bug Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* --- RESET & CORE --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      outline: none; 
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* --- BODY & SPACE BACKGROUND --- */
+    body {
+      background-color: #010103;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden; 
+      position: relative;
+    }
+
+    /* Moving Stars Background */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+      background-size: 550px 550px, 350px 350px, 250px 250px;
+      background-position: 0 0, 40px 60px, 130px 270px;
+      animation: starMove 60s linear infinite;
+      z-index: -2;
+      opacity: 0.5;
+    }
+
+    /* Central Purple Nebula Glow */
+    body::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 800px; height: 800px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(138, 43, 226, 0.2) 0%, transparent 70%);
+      z-index: -1;
+      animation: nebulaPulse 10s ease-in-out infinite;
+    }
+
+    @keyframes starMove {
+      from { transform: translateY(0); }
+      to { transform: translateY(-500px); }
+    }
+
+    @keyframes nebulaPulse {
+      0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    /* --- 3D LOGIN CARD --- */
+    .login-container {
+      background: rgba(10, 10, 20, 0.65);
+      padding: 45px 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(138, 43, 226, 0.5);
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: floatCard 6s ease-in-out infinite, borderGlow 4s infinite alternate;
+      position: relative;
+      z-index: 10;
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes borderGlow {
+      0% { box-shadow: 0 0 15px rgba(138, 43, 226, 0.2), inset 0 0 10px rgba(138, 43, 226, 0.1); border-color: rgba(138, 43, 226, 0.4); }
+      100% { box-shadow: 0 0 30px rgba(189, 0, 255, 0.5), inset 0 0 20px rgba(189, 0, 255, 0.2); border-color: #bd00ff; }
+    }
+
+    /* --- PRO LOGO ANIMATION --- */
+    .logo-container-outer {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: #bd00ff;
+      border-right-color: #00e5ff;
+      animation: spinRing 2s linear infinite;
+      box-shadow: 0 0 15px rgba(189, 0, 255, 0.5);
+    }
+
+    .logo-wrapper {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: #000;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @keyframes spinRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* --- TEXT STYLING --- */
+    .app-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(189, 0, 255, 0.8);
+    }
+
+    .app-subtitle {
+      font-size: 10px;
+      color: #b19cd9;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* --- INPUT GROUPS --- */
+    .input-group {
+      position: relative;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+      width: 18px;
+      height: 18px;
+      transition: color 0.3s, filter 0.3s;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 14px 14px 40px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #444; 
+      color: #fff;
+      font-size: 15px;
+      transition: all 0.4s ease;
+    }
+
+    input::placeholder {
+      color: #555;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    input:focus {
+      border-bottom: 1px solid #bd00ff;
+      box-shadow: 0 10px 10px -10px rgba(189, 0, 255, 0.5);
+    }
+
+    input:focus + .input-icon {
+      color: #bd00ff;
+      filter: drop-shadow(0 0 5px #bd00ff);
+    }
+
+    /* --- GENERATED CODE STYLING --- */
+    .code-display-container {
+      width: 100%;
+      display: none; /* Hidden by default */
+      animation: fadeIn 0.5s ease;
+    }
+
+    .generated-code {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      color: #00e5ff;
+      text-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
+      margin: 10px 0 5px 0;
+      text-align: center;
+    }
+
+    .code-instruction {
+      font-size: 11px;
+      color: #b19cd9;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- BUTTON --- */
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(45deg, #4b0082, #bd00ff, #00e5ff, #4b0082);
+      background-size: 300% 300%;
+      animation: gradientMove 4s ease infinite;
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(189, 0, 255, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, opacity 0.3s;
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .footer-info {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 9px;
+      color: #555;
+      font-family: monospace;
+    }
+
+    /* --- POPUP --- */
+    .popup {
+      position: fixed;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      z-index: 99999;
+      border: 1px solid;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .popup.visible {
+      bottom: 40px;
+      opacity: 1;
+    }
+
+    .popup.process { background: rgba(40, 40, 50, 0.95); color: #00e5ff; border-color: #00e5ff; }
+    .popup.error { background: rgba(30, 5, 5, 0.95); color: #ff3333; border-color: #ff3333; }
+    .popup.success { background: rgba(5, 30, 5, 0.95); color: #00ff66; border-color: #00ff66; }
+
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    
+    <div class="logo-container-outer">
+      <div class="logo-ring"></div>
+      <div class="logo-wrapper">
+        <img src="https://sabir7718.is-a.dev/photos/sayan.jpg" alt="Logo">
+      </div>
+    </div>
+
+    <div class="app-title">SAYAN BUG WEB</div>
+    <div class="app-subtitle">SYSTEM INITIALIZATION</div>
+
+    <div class="input-group">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      <input id="whatsappNumber" type="tel" placeholder="Enter WhatsApp number to continue" autocomplete="off" />
+    </div>
+
+    <div id="codeContainer" class="code-display-container">
+      <div id="apiCodeText" class="generated-code">----</div>
+      <div class="code-instruction">Enter this code to your WhatsApp account to connect</div>
+    </div>
+
+    <button id="connectBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+      <span id="btnText">CONNECT</span>
+    </button>
+
+    <div class="footer-info">
+      <span>© 2025 SAYAN</span>
+      <span>ENCRYPTED CONNECTION</span>
+    </div>
+
+  </div>
+
+<script type="module">
+const API_BASE = "";
+let pollingInterval = null;
+
+/********************************************
+  🍪 COOKIE HELPERS
+*********************************************/
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+}
+
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+
+/********************************************
+  🔐 UNIFIED DEVICE CODE
+*********************************************/
+async function getDeviceCodeUnified() {
+  const saved = localStorage.getItem("deviceCode");
+  if (saved && saved.includes("|")) return saved;
+  const safe = v => (v !== undefined && v !== null && v !== "" ? v : "UNKNOWN");
+  let model = "WEB", device = "WEB", brand = "WEB";
+  try {
+    if (typeof Native !== "undefined" && Native.getDeviceInfo) {
+      const info = Native.getDeviceInfo().split("|");
+      model = safe(info[0]); device = safe(info[1]); brand = safe(info[2]);
+    }
+  } catch (e) {}
+  const hashSource = [navigator.userAgent, navigator.language, screen.width, screen.height].join("|");
+  const encoded = new TextEncoder().encode(hashSource);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  const hash = [...new Uint8Array(hashBuffer)].map(b => b.toString(16).padStart(2, "0")).join("");
+  const finalCode = `${model}|${device}|${brand}|${hash}`;
+  localStorage.setItem("deviceCode", finalCode);
+  return finalCode;
+}
+
+/********************************************
+  🟢 POPUP FUNCTION
+*********************************************/
+function showPopup(message, type = "error") {
+  const existing = document.querySelector(".popup");
+  if (existing) existing.remove();
+  const popup = document.createElement("div");
+  popup.className = `popup ${type}`;
+  popup.innerText = message;
+  document.body.appendChild(popup);
+  void popup.offsetWidth;
+  setTimeout(() => popup.classList.add("visible"), 10);
+  if (type !== 'process') {
+    setTimeout(() => {
+      popup.classList.remove("visible");
+      setTimeout(() => popup.remove(), 400);
+    }, 3000);
+  }
+}
+
+/********************************************
+  🔄 SESSION POLLING & INFO FETCH
+*********************************************/
+async function startSessionPolling(deviceCode) {
+  if (pollingInterval) clearInterval(pollingInterval);
+
+  pollingInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/session-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceCode })
+      });
+      const data = await res.json();
+
+      if (data.status === "connected") {
+        clearInterval(pollingInterval);
+        showPopup("CONNECTION ESTABLISHED!", "success");
+        
+        // Fetch User Info
+        const infoRes = await fetch(`${API_BASE}/info`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deviceCode })
+        });
+        const infoData = await infoRes.json();
+
+        if (infoData.success) {
+          setCookie("loggedIn", "true");
+          setCookie("userName", infoData.name);
+          setCookie("profilePic", infoData.profilePicture);
+          
+          setTimeout(() => { location.href = "dashboard"; }, 1500);
+        }
+      }
+    } catch (e) { console.error("Polling error:", e); }
+  }, 4000); // Poll every 4 seconds
+}
+
+/********************************************
+  🚀 INITIAL CHECK ON PAGE LOAD
+*********************************************/
+async function initCheck() {
+  const deviceCode = await getDeviceCodeUnified();
+  const isLoggedIn = getCookie("loggedIn");
+
+  if (isLoggedIn === "true") {
+    try {
+      const res = await fetch(`${API_BASE}/session-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceCode })
+      });
+      const data = await res.json();
+
+      if (data.status === "connected") {
+        location.href = "dashboard";
+      } else {
+        // Session expired or disconnected, reset cookies
+        setCookie("loggedIn", "false");
+      }
+    } catch (e) { console.log("Init check failed, staying on login."); }
+  }
+}
+
+/********************************************
+  ⚡ CONNECT BUTTON CLICK
+*********************************************/
+document.getElementById("connectBtn").addEventListener("click", async () => {
+  const waNumber = document.getElementById("whatsappNumber").value.trim();
+  const connectBtn = document.getElementById("connectBtn");
+  const btnText = document.getElementById("btnText");
+
+  if (!waNumber) return showPopup("Enter WhatsApp Number", "error");
+
+  showPopup("REQUESTING CODE...", "process");
+  btnText.innerText = "WAITING...";
+  connectBtn.disabled = true;
+
+  try {
+    const deviceCode = await getDeviceCodeUnified();
+    const res = await fetch(`${API_BASE}/connect`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceCode, phoneNumber: waNumber })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "FAILED");
+
+    const pairCode = data.code || data.pairingCode;
+    document.getElementById("apiCodeText").innerText = pairCode;
+    document.getElementById("codeContainer").style.display = "block";
+    
+    showPopup("CODE GENERATED. LINK NOW.", "success");
+    btnText.innerText = "WAITING FOR LINK...";
+
+    // Start Polling
+    startSessionPolling(deviceCode);
+
+  } catch (err) {
+    btnText.innerText = "CONNECT";
+    connectBtn.disabled = false;
+    showPopup(err.message || "SERVER ERROR", "error");
+  }
+});
+
+// Run Init Check
+initCheck();
+
+</script>
+</body>
+</html>
